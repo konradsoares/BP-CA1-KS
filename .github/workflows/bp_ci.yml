@@ -13,32 +13,60 @@ on:
   workflow_dispatch:
  
 
-jobs:
-  build:                                            # "build" job
-    runs-on: windows-latest                         # runner
+# jobs:
+#   build:                                            # "build" job
+#     runs-on: windows-latest                         # runner
 
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v4
+#       with:
+#         dotnet-version: 8.0.x
+#     - name: Build for Release
+#       run: dotnet build --configuration Release
+#     - name: Run unit tests
+#       run: dotnet test BPCA1UnitTest/BPCA1UnitTest.csproj --no-restore --collect "Code coverage" -l:trx
+
+#     - name: Publish Unit Test Results
+#       uses: dorny/test-reporter@v1
+#       with:
+#         artifact: 'TestResults'
+#         name: MS Tests 
+#         path: '**/*.trx'
+#         reporter: 'dotnet-trx'
+
+#     - name: Publish
+#       run: dotnet publish -c Release --property:PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
-    - name: Build for Release
-      run: dotnet build --configuration Release
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore
+
     - name: Run unit tests
       run: dotnet test BPCA1UnitTest/BPCA1UnitTest.csproj --no-restore --collect "Code coverage" -l:trx
 
-    - name: Publish Unit Test Results
-      uses: dorny/test-reporter@v1
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
       with:
-        artifact: 'TestResults'
-        name: MS Tests 
+        name: test-results
         path: '**/*.trx'
-        reporter: 'dotnet-trx'
 
-    - name: Publish
-      run: dotnet publish -c Release --property:PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-      
+    - name: Publish application
+      run: dotnet publish -c Release --output ./publish      
 
 # Deploy to Azure Web apps
     - name: Run Azure webapp deploy action using publish profile credentials
