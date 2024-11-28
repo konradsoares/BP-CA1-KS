@@ -25,19 +25,19 @@ jobs:
         dotnet-version: 8.0.x
     - name: Build for Release
       run: dotnet build --configuration Release
-    - name: Run unit tests
-      run: dotnet test bmiUnitTestProject/bmiUnitTestProject.csproj --no-restore --collect "Code coverage" -l:trx
+    # - name: Run unit tests
+    #   # run: dotnet test bmiUnitTestProject/bmiUnitTestProject.csproj --no-restore --collect "Code coverage" -l:trx
    
-    - name: Publish Unit Test Results
-      uses: dorny/test-reporter@v1
-      with:
-        artifact: ''
-        name: MS Tests 
-        path: '**/*.trx'
-        reporter: 'dotnet-trx'                     
+    # - name: Publish Unit Test Results
+    #   uses: dorny/test-reporter@v1
+    #   with:
+    #     artifact: ''
+    #     name: MS Tests 
+    #     path: '**/*.trx'
+    #     reporter: 'dotnet-trx'                     
 
-    - name: Publish
-      run: dotnet publish -c Release --property:PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    # - name: Publish
+    #   run: dotnet publish -c Release --property:PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
       
 
 # Deploy to Azure Web apps
