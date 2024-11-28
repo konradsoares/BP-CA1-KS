@@ -1,80 +1,45 @@
-name: BP_CA1_KS                                        # "BP_CA1_KS" workflow, name is optional
+name: BP_CA1_KS
 
 env:
-  AZURE_WEBAPP_NAME: BP-CA1-KS            # set this to your application's name
-  
-  AZURE_WEBAPP_PACKAGE_PATH: 'publish/myapp'        # set this to the path to your web app project
-
+  AZURE_WEBAPP_NAME: BP-CA1-KS
+  AZURE_WEBAPP_PACKAGE_PATH: 'publish/myapp'
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
- 
 
-# jobs:
-#   build:                                            # "build" job
-#     runs-on: windows-latest                         # runner
-
-#     steps:
-#     - uses: actions/checkout@v4
-#     - name: Setup .NET
-#       uses: actions/setup-dotnet@v4
-#       with:
-#         dotnet-version: 8.0.x
-#     - name: Build for Release
-#       run: dotnet build --configuration Release
-#     - name: Run unit tests
-#       run: dotnet test BPCA1UnitTest/BPCA1UnitTest.csproj --no-restore --collect "Code coverage" -l:trx
-
-#     - name: Publish Unit Test Results
-#       uses: dorny/test-reporter@v1
-#       with:
-#         artifact: 'TestResults'
-#         name: MS Tests 
-#         path: '**/*.trx'
-#         reporter: 'dotnet-trx'
-
-#     - name: Publish
-#       run: dotnet publish -c Release --property:PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
+    - uses: actions/checkout@v4
+    
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build solution
-      run: dotnet build --no-restore
-
+        dotnet-version: 8.0.x
+    
+    - name: Build for Release
+      run: dotnet build --configuration Release
+    
     - name: Run unit tests
       run: dotnet test BPCA1UnitTest/BPCA1UnitTest.csproj --no-restore --collect "Code coverage" -l:trx
-
-    - name: Upload test results
+    
+    - name: Upload Unit Test Results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results
+        name: TestResults
         path: '**/*.trx'
+    
+    - name: Publish
+      run: dotnet publish -c Release --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-    - name: Publish application
-      run: dotnet publish -c Release --output ./publish      
-
-# Deploy to Azure Web apps
-    - name: Run Azure webapp deploy action using publish profile credentials
+    - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}                        # your app name
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4B5A2FC226D949369E5A3C808336420F }} # Define secret variable in repository settings as per action documentation
-        package: 'bp-ca1-ks/${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
-       
-
-
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4B5A2FC226D949369E5A3C808336420F }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
