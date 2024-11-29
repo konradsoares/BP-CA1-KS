@@ -31,21 +31,27 @@ namespace BPCalculator
             get
             {
                 if (Systolic < 90 || Diastolic < 60)
-                {
                     return BPCategory.Low;
-                }
                 else if (Systolic <= 120 && Diastolic <= 80)
-                {
                     return BPCategory.Ideal;
-                }
                 else if (Systolic <= 139 || Diastolic <= 89)
-                {
                     return BPCategory.PreHigh;
-                }
                 else
-                {
                     return BPCategory.High;
+            }
+        }
+
+        // Calculate Mean Arterial Pressure (MAP)
+        public double MeanArterialPressure
+        {
+            get
+            {
+                double map = (Systolic + 2 * Diastolic) / 3.0;
+                if (map < 50 || map > 150)
+                {
+                    throw new InvalidOperationException("Mean Arterial Pressure out of range.");
                 }
+                return map;
             }
         }
     }
