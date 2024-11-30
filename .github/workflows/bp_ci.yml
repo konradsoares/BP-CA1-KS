@@ -83,6 +83,23 @@ jobs:
         with:
           name: .net-app
           path: ${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp
+              env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Send Telegram Success Message
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="✅ CI Pipeline succeeded on branch ${{ github.ref }}."
+
+      - name: Send Telegram Failure Message
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="❌ CI Pipeline failed on branch ${{ github.ref }}."
 
   deploy:
     runs-on: windows-latest
