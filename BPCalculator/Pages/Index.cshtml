@@ -24,16 +24,10 @@
             <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-default" style="border: 2px solid #007bff; border-radius: 5px;" />
             </div>
-            @if (ViewData.ModelState.IsValid && Model.BP.Systolic > 0 && Model.BP.Diastolic > 0)
+            @if (ViewData.ModelState.IsValid)
             {
                 <div class="form-group">
-                    <label>Blood Pressure Category:</label>
-                    <input class="form-control" value="@Model.BP.Category" readonly />
-                </div>
-
-                <div class="form-group">
-                    <label>Mean Arterial Pressure (MAP):</label>
-                    <input class="form-control" value="@Model.BP.MeanArterialPressure" readonly />
+                    <input type="text" value="@Model.BP.Category" class="form-control @Model.GetCategoryColorClass()" readonly />
                 </div>
             }
         </form>
