@@ -83,7 +83,7 @@ jobs:
         with:
           name: .net-app
           path: ${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp
-              env:
+        env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
