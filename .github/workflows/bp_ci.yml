@@ -90,7 +90,7 @@ jobs:
         run: |
           $Body = @{
             chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
-            text    = "✅ GitHub Actions succeededon branch ${{ github.ref }}."
+            text    = "✅ GitHub Actions succeeded on branch ${{ github.ref }}."
           }
           Invoke-RestMethod -Uri "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -Method Post -Body $Body
 
