@@ -84,6 +84,7 @@ jobs:
           name: .net-app
           path: ${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp
 
+
       - name: Send Telegram Success Message
         if: success()
         shell: pwsh
