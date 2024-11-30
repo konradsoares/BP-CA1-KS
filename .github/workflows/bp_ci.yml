@@ -83,23 +83,25 @@ jobs:
         with:
           name: .net-app
           path: ${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Send Telegram Success Message
         if: success()
+        shell: pwsh
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="✅ CI Pipeline succeeded on branch ${{ github.ref }}."
+          $Body = @{
+            chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+            text    = "✅ GitHub Actions succeededon branch ${{ github.ref }}."
+          }
+          Invoke-RestMethod -Uri "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -Method Post -Body $Body
 
       - name: Send Telegram Failure Message
         if: failure()
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="❌ CI Pipeline failed on branch ${{ github.ref }}."
+          $Body = @{
+            chat_id = "${{ secrets.TELEGRAM_CHAT_ID }}"
+            text    = "❌ CI Pipeline failed on branch ${{ github.ref }}."
+          }
+          Invoke-RestMethod -Uri "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -Method Post -Body $Body
 
   deploy:
     runs-on: windows-latest
